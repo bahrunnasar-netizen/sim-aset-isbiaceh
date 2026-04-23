@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { C, ASSETS, PEMINJAMAN, ROLES, btnStyle } from "./constants";
+import { CetakBAST } from "./CetakBAST";
 
 /* ─── DASHBOARD ─────────────────────────────────────────── */
 export function DashboardPage({ role, setPage }) {
@@ -575,6 +576,7 @@ export function BASTPage({ role, showNotif }) {
   const [list, setList] = useState(DATA_BAST_LOCAL);
   const [showForm, setShowForm] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [cetakData, setCetakData] = useState(null);
   const [form, setForm] = useState({
     aset_id:"", aset_nama:"", penerima:"", nip:"",
     jabatan:"", unit:"", kondisi:"Baik", keterangan:"", tgl_serah:""
@@ -729,6 +731,10 @@ export function BASTPage({ role, showNotif }) {
                       padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
                       background:C.blueDim, border:`1px solid ${C.blue}44`, color:C.blue, cursor:"pointer",
                     }}>👁 Detail</button>
+                    <button onClick={() => setCetakData(b)} style={{
+                      padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
+                      background:C.primaryDim, border:`1px solid ${C.primary}44`, color:C.primary, cursor:"pointer",
+                    }}>🖨️ Cetak</button>
                     {b.status==="Menunggu Approval" && role==="pimpinan" && <>
                       <button onClick={() => approve(b.id)} style={{
                         padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
@@ -752,6 +758,11 @@ export function BASTPage({ role, showNotif }) {
           </tbody>
         </table>
       </div>
+
+      {/* Cetak BAST */}
+      {cetakData && (
+        <CetakBAST bast={cetakData} onClose={() => setCetakData(null)} />
+      )}
 
       {/* Modal Form Buat BAST */}
       {showForm && (
@@ -835,7 +846,7 @@ export function BASTPage({ role, showNotif }) {
             {detail.status==="Aktif" && role==="admin" &&
               <button onClick={() => kembalikan(detail.id)} style={btnStyle(C.accent)}>↩ Kembalikan Aset</button>
             }
-            <button onClick={() => { showNotif("BAST dicetak!"); setDetail(null); }} style={btnStyle(C.blue)}>🖨️ Cetak BAST</button>
+            <button onClick={() => { setCetakData(detail); setDetail(null); }} style={btnStyle(C.blue)}>🖨️ Cetak BAST</button>
             <button onClick={() => setDetail(null)} style={btnStyle(C.textDim)}>Tutup</button>
           </div>
         </Modal>
