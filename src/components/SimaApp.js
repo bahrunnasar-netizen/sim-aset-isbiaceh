@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import {
   DashboardPage, AsetPage, ImportPage, PeminjamanPage,
   PinjamBaruPage, LaporanPage, PenggunaPage, PengadaanPage,
+  BASTPage,
 } from "./Pages";
 
 export default function SimaApp() {
@@ -29,6 +30,7 @@ export default function SimaApp() {
   const renderPage = () => {
     const props = { role, showNotif, searchQ, setPage };
     switch (page) {
+      case "bast":        return <BASTPage        {...props} />;
       case "dashboard":   return <DashboardPage   {...props} />;
       case "aset":        return <AsetPage         {...props} />;
       case "import":      return <ImportPage        {...props} />;
@@ -129,7 +131,7 @@ export default function SimaApp() {
         </div>
 
         {/* Content */}
-        <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+        <div className="main-content" style={{ flex:1, overflowY:"auto", padding:24 }}>
           {renderPage()}
         </div>
       </div>

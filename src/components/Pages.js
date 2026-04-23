@@ -568,3 +568,311 @@ function MiniBtn({ label, color, onClick }) {
     }}>{label}</button>
   );
 }
+
+/* ─── BAST PAGE ─────────────────────────────────────────── */
+export function BASTPage({ role, showNotif }) {
+  const [tab, setTab] = useState("daftar");
+  const [list, setList] = useState(DATA_BAST_LOCAL);
+  const [showForm, setShowForm] = useState(false);
+  const [detail, setDetail] = useState(null);
+  const [form, setForm] = useState({
+    aset_id:"", aset_nama:"", penerima:"", nip:"",
+    jabatan:"", unit:"", kondisi:"Baik", keterangan:"", tgl_serah:""
+  });
+
+  const set = (k,v) => setForm(f => ({...f,[k]:v}));
+
+  const submitBAST = () => {
+    if (!form.aset_nama || !form.penerima || !form.nip) {
+      showNotif("Lengkapi data BAST dulu!", "error"); return;
+    }
+    const newBAST = {
+      id: `BAST-00${list.length+1}`,
+      no_bast: `0${list.length+1}/BAST-BMN/ISBI/2026`,
+      ...form,
+      status: "Menunggu Approval",
+      approved_by: "-", tgl_approve: "-",
+      tgl_serah: form.tgl_serah || "22 Apr 2026",
+    };
+    setList(l => [...l, newBAST]);
+    showNotif("BAST berhasil dibuat! Menunggu approval Pimpinan.");
+    setShowForm(false);
+    setForm({ aset_id:"", aset_nama:"", penerima:"", nip:"", jabatan:"", unit:"", kondisi:"Baik", keterangan:"", tgl_serah:"" });
+  };
+
+  const approve = (id) => {
+    setList(l => l.map(b => b.id===id ? {...b, status:"Aktif", approved_by:"Rektor ISBI Aceh", tgl_approve:"22 Apr 2026"} : b));
+    showNotif("BAST disetujui! Aset resmi diserahkan ke pegawai.");
+    setDetail(null);
+  };
+
+  const tolak = (id) => {
+    setList(l => l.map(b => b.id===id ? {...b, status:"Ditolak"} : b));
+    showNotif("BAST ditolak.", "error");
+    setDetail(null);
+  };
+
+  const kembalikan = (id) => {
+    setList(l => l.map(b => b.id===id ? {...b, status:"Dikembalikan"} : b));
+    showNotif("Aset berhasil dikembalikan ke inventaris!");
+  };
+
+  const statusColor = s =>
+    s==="Aktif" ? C.primary : s==="Menunggu Approval" ? C.accent :
+    s==="Dikembalikan" ? C.blue : C.red;
+
+  const counts = {
+    aktif: list.filter(b=>b.status==="Aktif").length,
+    menunggu: list.filter(b=>b.status==="Menunggu Approval").length,
+    kembali: list.filter(b=>b.status==="Dikembalikan").length,
+  };
+
+  return (
+    <div style={{ animation:"fadeUp 0.4s ease" }}>
+
+      {/* Header */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20, flexWrap:"wrap", gap:12 }}>
+        <div>
+          <h2 style={{ margin:0, fontSize:18, fontWeight:800 }}>
+            {role==="pimpinan" ? "Approval BAST Aset" : "Berita Acara Serah Terima (BAST)"}
+          </h2>
+          <p style={{ margin:"4px 0 0", color:C.textMuted, fontSize:13 }}>
+            {role==="pimpinan"
+              ? "Review & setujui BAST yang diajukan Admin"
+              : "Pengelolaan serah terima aset BMN ke pegawai"}
+          </p>
+        </div>
+        {role==="admin" && (
+          <button onClick={() => setShowForm(true)} style={btnStyle(C.primary, true)}>
+            ➕ Buat BAST Baru
+          </button>
+        )}
+      </div>
+
+      {/* Stats */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:20 }}>
+        {[
+          { label:"BAST Aktif",           val:counts.aktif,    icon:"✅", color:C.primary },
+          { label:"Menunggu Approval",     val:counts.menunggu, icon:"⏳", color:C.accent  },
+          { label:"Aset Dikembalikan",     val:counts.kembali,  icon:"↩️", color:C.blue    },
+        ].map((s,i) => (
+          <div key={i} style={{
+            background:C.card, borderRadius:12,
+            border:`1px solid ${C.border}`,
+            padding:"14px 16px",
+            borderLeft:`3px solid ${s.color}`,
+            display:"flex", alignItems:"center", gap:12,
+          }}>
+            <span style={{ fontSize:24 }}>{s.icon}</span>
+            <div>
+              <div style={{ fontSize:22, fontWeight:900, color:s.color }}>{s.val}</div>
+              <div style={{ fontSize:12, color:C.textMuted }}>{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tab filter */}
+      <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap" }}>
+        {["Semua","Menunggu Approval","Aktif","Dikembalikan","Ditolak"].map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{
+            padding:"6px 14px", borderRadius:20, fontSize:12,
+            background: tab===t ? C.primary : C.card2,
+            border:`1px solid ${tab===t ? C.primary : C.border}`,
+            color: tab===t ? "white" : C.textMuted,
+            cursor:"pointer", transition:"all 0.15s",
+          }}>{t}</button>
+        ))}
+      </div>
+
+      {/* Tabel BAST */}
+      <div style={{ background:C.card, borderRadius:14, border:`1px solid ${C.border}`, overflowX:"auto" }}>
+        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+          <thead>
+            <tr style={{ background:C.card2 }}>
+              {["No. BAST","Nama Aset","Penerima","Jabatan/Unit","Tgl Serah","Status","Aksi"].map(h => (
+                <th key={h} style={{ padding:"12px 14px", textAlign:"left", color:C.textMuted, fontWeight:600, whiteSpace:"nowrap" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {list
+              .filter(b => tab==="Semua" || b.status===tab)
+              .map((b,i) => (
+              <tr key={b.id} style={{ borderTop:`1px solid ${C.border}` }}
+                onMouseEnter={e => e.currentTarget.style.background=C.card2}
+                onMouseLeave={e => e.currentTarget.style.background="transparent"}
+              >
+                <td style={{ padding:"12px 14px" }}>
+                  <div style={{ color:C.blue, fontWeight:700, fontSize:12 }}>{b.id}</div>
+                  <div style={{ color:C.textDim, fontSize:11 }}>{b.no_bast}</div>
+                </td>
+                <td style={{ padding:"12px 14px", fontWeight:600 }}>{b.aset_nama}</td>
+                <td style={{ padding:"12px 14px" }}>
+                  <div style={{ fontWeight:500 }}>{b.penerima}</div>
+                  <div style={{ fontSize:11, color:C.textDim }}>NIP: {b.nip}</div>
+                </td>
+                <td style={{ padding:"12px 14px", color:C.textMuted }}>
+                  <div>{b.jabatan}</div>
+                  <div style={{ fontSize:11, color:C.textDim }}>{b.unit}</div>
+                </td>
+                <td style={{ padding:"12px 14px", color:C.textMuted, whiteSpace:"nowrap" }}>{b.tgl_serah}</td>
+                <td style={{ padding:"12px 14px" }}>
+                  <span style={{
+                    padding:"3px 10px", borderRadius:12, fontSize:11, fontWeight:600,
+                    background:statusColor(b.status)+"22", color:statusColor(b.status),
+                  }}>{b.status}</span>
+                </td>
+                <td style={{ padding:"12px 14px" }}>
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                    <button onClick={() => setDetail(b)} style={{
+                      padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
+                      background:C.blueDim, border:`1px solid ${C.blue}44`, color:C.blue, cursor:"pointer",
+                    }}>👁 Detail</button>
+                    {b.status==="Menunggu Approval" && role==="pimpinan" && <>
+                      <button onClick={() => approve(b.id)} style={{
+                        padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
+                        background:C.primaryDim, border:`1px solid ${C.primary}44`, color:C.primary, cursor:"pointer",
+                      }}>✅ Setuju</button>
+                      <button onClick={() => tolak(b.id)} style={{
+                        padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
+                        background:C.redDim, border:`1px solid ${C.red}44`, color:C.red, cursor:"pointer",
+                      }}>❌ Tolak</button>
+                    </>}
+                    {b.status==="Aktif" && role==="admin" &&
+                      <button onClick={() => kembalikan(b.id)} style={{
+                        padding:"4px 10px", borderRadius:6, fontSize:11, fontWeight:600,
+                        background:C.accentDim, border:`1px solid ${C.accent}44`, color:C.accent, cursor:"pointer",
+                      }}>↩ Kembalikan</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Modal Form Buat BAST */}
+      {showForm && (
+        <Modal title="📋 Buat BAST Baru" onClose={() => setShowForm(false)}>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+            {[
+              { label:"Nama Aset *",     key:"aset_nama",  ph:"Contoh: Laptop Dell Inspiron 15" },
+              { label:"Kode BMN / NUP",  key:"aset_id",    ph:"Contoh: BMN-001" },
+              { label:"Nama Penerima *", key:"penerima",   ph:"Nama lengkap pegawai" },
+              { label:"NIP *",           key:"nip",        ph:"18 digit NIP" },
+              { label:"Jabatan",         key:"jabatan",    ph:"Jabatan pegawai" },
+              { label:"Unit Kerja",      key:"unit",       ph:"Bagian/Fakultas/Unit" },
+              { label:"Tanggal Serah",   key:"tgl_serah",  ph:"", type:"date" },
+            ].map(f => (
+              <div key={f.key} style={{ gridColumn: f.key==="keterangan" ? "1/-1" : "auto" }}>
+                <label style={{ fontSize:12, color:C.textMuted, display:"block", marginBottom:4 }}>{f.label}</label>
+                <input type={f.type||"text"} placeholder={f.ph} value={form[f.key]}
+                  onChange={e => set(f.key, e.target.value)}
+                  style={{ width:"100%", padding:"9px 12px", borderRadius:8, background:C.card2, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:"none", boxSizing:"border-box" }}
+                />
+              </div>
+            ))}
+            <div style={{ gridColumn:"1/-1" }}>
+              <label style={{ fontSize:12, color:C.textMuted, display:"block", marginBottom:4 }}>Kondisi Aset</label>
+              <select value={form.kondisi} onChange={e => set("kondisi",e.target.value)}
+                style={{ width:"100%", padding:"9px 12px", borderRadius:8, background:C.card2, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:"none" }}>
+                {["Baik","Rusak Ringan","Rusak Berat"].map(k => <option key={k}>{k}</option>)}
+              </select>
+            </div>
+            <div style={{ gridColumn:"1/-1" }}>
+              <label style={{ fontSize:12, color:C.textMuted, display:"block", marginBottom:4 }}>Keterangan</label>
+              <textarea rows={2} placeholder="Tujuan penyerahan aset..." value={form.keterangan}
+                onChange={e => set("keterangan",e.target.value)}
+                style={{ width:"100%", padding:"9px 12px", borderRadius:8, background:C.card2, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:"none", resize:"vertical", boxSizing:"border-box" }}
+              />
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:10, justifyContent:"flex-end", marginTop:16 }}>
+            <button onClick={() => setShowForm(false)} style={btnStyle(C.textDim)}>Batal</button>
+            <button onClick={submitBAST} style={btnStyle(C.primary, true)}>📤 Kirim ke Pimpinan</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal Detail BAST */}
+      {detail && (
+        <Modal title={`📋 Detail BAST — ${detail.id}`} onClose={() => setDetail(null)}>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, fontSize:13 }}>
+            {[
+              ["No. BAST",    detail.no_bast],
+              ["Kode Aset",   detail.aset_id],
+              ["Nama Aset",   detail.aset_nama],
+              ["Kondisi",     detail.kondisi],
+              ["Penerima",    detail.penerima],
+              ["NIP",         detail.nip],
+              ["Jabatan",     detail.jabatan],
+              ["Unit Kerja",  detail.unit],
+              ["Tgl Serah",   detail.tgl_serah],
+              ["Disetujui Oleh", detail.approved_by],
+              ["Tgl Approve", detail.tgl_approve],
+            ].map(([k,v],i) => (
+              <div key={i} style={{ padding:"8px 12px", background:C.card2, borderRadius:8 }}>
+                <div style={{ fontSize:11, color:C.textMuted, marginBottom:3 }}>{k}</div>
+                <div style={{ fontWeight:600, color:C.text }}>{v||"-"}</div>
+              </div>
+            ))}
+            <div style={{ gridColumn:"1/-1", padding:"8px 12px", background:C.card2, borderRadius:8 }}>
+              <div style={{ fontSize:11, color:C.textMuted, marginBottom:3 }}>Keterangan</div>
+              <div style={{ color:C.text }}>{detail.keterangan||"-"}</div>
+            </div>
+            <div style={{ gridColumn:"1/-1", padding:"8px 12px", borderRadius:8, background:statusColor(detail.status)+"22", border:`1px solid ${statusColor(detail.status)}44` }}>
+              <div style={{ fontSize:11, color:C.textMuted, marginBottom:3 }}>Status</div>
+              <div style={{ fontWeight:700, color:statusColor(detail.status), fontSize:14 }}>{detail.status}</div>
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:10, justifyContent:"flex-end", marginTop:16, flexWrap:"wrap" }}>
+            {detail.status==="Menunggu Approval" && role==="pimpinan" && <>
+              <button onClick={() => approve(detail.id)} style={btnStyle(C.primary,true)}>✅ Setujui BAST</button>
+              <button onClick={() => tolak(detail.id)} style={btnStyle(C.red)}>❌ Tolak</button>
+            </>}
+            {detail.status==="Aktif" && role==="admin" &&
+              <button onClick={() => kembalikan(detail.id)} style={btnStyle(C.accent)}>↩ Kembalikan Aset</button>
+            }
+            <button onClick={() => { showNotif("BAST dicetak!"); setDetail(null); }} style={btnStyle(C.blue)}>🖨️ Cetak BAST</button>
+            <button onClick={() => setDetail(null)} style={btnStyle(C.textDim)}>Tutup</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+/* ─── MODAL COMPONENT ────────────────────────────────────── */
+function Modal({ title, onClose, children }) {
+  return (
+    <div style={{
+      position:"fixed", inset:0, zIndex:9000,
+      background:"rgba(0,0,0,0.7)",
+      display:"flex", alignItems:"center", justifyContent:"center",
+      padding:20,
+    }} onClick={onClose}>
+      <div style={{
+        background:C.card, borderRadius:16,
+        border:`1px solid ${C.border}`,
+        padding:24, width:"100%", maxWidth:600,
+        maxHeight:"90vh", overflowY:"auto",
+        boxShadow:"0 24px 64px rgba(0,0,0,0.5)",
+        animation:"fadeUp 0.3s ease",
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+          <div style={{ fontSize:15, fontWeight:800 }}>{title}</div>
+          <button onClick={onClose} style={{ background:"none", border:"none", color:C.textMuted, cursor:"pointer", fontSize:18 }}>✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+const DATA_BAST_LOCAL = [
+  { id:"BAST-001", no_bast:"01/BAST-BMN/ISBI/2024", aset_id:"BMN-001", aset_nama:"Laptop Dell Inspiron 15", penerima:"Bahrun Nasar, S.Sos", nip:"198801012015041001", jabatan:"Pengelola BMN", unit:"Bagian Umum", tgl_serah:"15 Jan 2024", kondisi:"Baik", status:"Aktif", approved_by:"Rektor ISBI Aceh", tgl_approve:"16 Jan 2024", keterangan:"Untuk keperluan pengelolaan BMN kampus" },
+  { id:"BAST-002", no_bast:"02/BAST-BMN/ISBI/2024", aset_id:"BMN-005", aset_nama:"Kamera Canon EOS 800D",   penerima:"Dr. Rasyid, M.Sn",   nip:"197503122005011002", jabatan:"Dosen Seni Rupa",  unit:"Fakultas Seni Rupa",  tgl_serah:"20 Feb 2024", kondisi:"Baik", status:"Menunggu Approval", approved_by:"-", tgl_approve:"-", keterangan:"Untuk dokumentasi kegiatan akademik" },
+  { id:"BAST-003", no_bast:"03/BAST-BMN/ISBI/2024", aset_id:"BMN-006", aset_nama:"Piano Yamaha P-125",      penerima:"Sari Indah, M.Mus",  nip:"198205252010122003", jabatan:"Dosen Musik",      unit:"Fakultas Seni Musik", tgl_serah:"01 Mar 2024", kondisi:"Baik", status:"Dikembalikan", approved_by:"Rektor ISBI Aceh", tgl_approve:"02 Mar 2024", keterangan:"Dikembalikan karena mutasi jabatan" },
+];

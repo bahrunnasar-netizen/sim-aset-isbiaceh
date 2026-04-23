@@ -39,6 +39,22 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile: tambah padding bawah supaya konten tidak ketutup bottom nav */
+@media (max-width: 767px) {
+  body {
+    overflow: auto;
+  }
+  /* Konten utama kasih ruang untuk bottom nav */
+  .main-content {
+    padding-bottom: 80px !important;
+  }
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
 }

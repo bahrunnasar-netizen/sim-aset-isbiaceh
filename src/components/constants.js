@@ -46,10 +46,72 @@ export const PEMINJAMAN = [
   { id:"PJM-004", aset:"Mikrofon Shure SM58",     peminjam:"UKM Paduan Suara",    tgl:"22 Apr 2026", kembali:"24 Apr 2026", status:"Menunggu",  tujuan:"Latihan Pementasan"       },
 ];
 
+// Kategori aset yang BISA di-BAST (diserahkan ke pegawai personal)
+export const KATEGORI_BAST = [
+  "Peralatan TI",
+  "Peralatan Seni",
+  "Alat Musik",
+  "Kendaraan Dinas",
+  "Peralatan Kantor Personal",
+];
+
+// Data BAST contoh
+export const DATA_BAST = [
+  {
+    id: "BAST-001",
+    no_bast: "01/BAST-BMN/ISBI/2024",
+    aset_id: "BMN-001",
+    aset_nama: "Laptop Dell Inspiron 15",
+    penerima: "Bahrun Nasar, S.Sos",
+    nip: "198801012015041001",
+    jabatan: "Pengelola BMN",
+    unit: "Bagian Umum",
+    tgl_serah: "15 Jan 2024",
+    kondisi: "Baik",
+    status: "Aktif", // Aktif / Dikembalikan / Menunggu Approval
+    approved_by: "Rektor ISBI Aceh",
+    tgl_approve: "16 Jan 2024",
+    keterangan: "Untuk keperluan pengelolaan BMN kampus",
+  },
+  {
+    id: "BAST-002",
+    no_bast: "02/BAST-BMN/ISBI/2024",
+    aset_id: "BMN-005",
+    aset_nama: "Kamera Canon EOS 800D",
+    penerima: "Dr. Rasyid, M.Sn",
+    nip: "197503122005011002",
+    jabatan: "Dosen Seni Rupa",
+    unit: "Fakultas Seni Rupa",
+    tgl_serah: "20 Feb 2024",
+    kondisi: "Baik",
+    status: "Menunggu Approval",
+    approved_by: "-",
+    tgl_approve: "-",
+    keterangan: "Untuk dokumentasi kegiatan akademik",
+  },
+  {
+    id: "BAST-003",
+    no_bast: "03/BAST-BMN/ISBI/2024",
+    aset_id: "BMN-006",
+    aset_nama: "Piano Yamaha P-125",
+    penerima: "Sari Indah, M.Mus",
+    nip: "198205252010122003",
+    jabatan: "Dosen Musik",
+    unit: "Fakultas Seni Musik",
+    tgl_serah: "01 Mar 2024",
+    kondisi: "Baik",
+    status: "Dikembalikan",
+    approved_by: "Rektor ISBI Aceh",
+    tgl_approve: "02 Mar 2024",
+    keterangan: "Dikembalikan karena mutasi jabatan",
+  },
+];
+
 export const MENU_ITEMS = {
   admin: [
     { id:"dashboard",  icon:"🏠", label:"Dashboard"       },
     { id:"aset",       icon:"📦", label:"Data Aset BMN"   },
+    { id:"bast",       icon:"📋", label:"BAST Aset"       },
     { id:"import",     icon:"🔄", label:"Import SIMAN v2" },
     { id:"peminjaman", icon:"🤝", label:"Peminjaman"      },
     { id:"laporan",    icon:"📊", label:"Laporan"         },
@@ -69,6 +131,7 @@ export const MENU_ITEMS = {
   pimpinan: [
     { id:"dashboard",  icon:"🏠", label:"Dashboard Eksekutif" },
     { id:"aset",       icon:"📦", label:"Ringkasan Aset"      },
+    { id:"bast",       icon:"📋", label:"Approval BAST"       },
     { id:"laporan",    icon:"📊", label:"Laporan & Analitik"  },
     { id:"pengadaan",  icon:"🛒", label:"Pengadaan"           },
   ],
