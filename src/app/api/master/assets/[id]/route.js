@@ -5,7 +5,7 @@ import {
   AssetOwnershipType,
   AssetStatus,
   AssetType,
-} from "@prisma/client";
+} from "@/generated/prisma";
 
 export const dynamic = "force-dynamic";
 

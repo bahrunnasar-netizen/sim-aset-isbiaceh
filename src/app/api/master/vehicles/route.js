@@ -6,7 +6,7 @@ import {
   AssetStatus,
   AssetType,
   VehicleStatus,
-} from "@prisma/client";
+} from "@/generated/prisma";
 import { buildVehicleReminderDigest, computeVehicleSummary } from "@/lib/vehicle-reminders";
 
 export const dynamic = "force-dynamic";

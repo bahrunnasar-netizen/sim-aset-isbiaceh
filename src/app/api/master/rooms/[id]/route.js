@@ -6,7 +6,7 @@ import {
   RoomOwnershipStatus,
   RoomUsageRole,
   RoomUsageType,
-} from "@prisma/client";
+} from "@/generated/prisma";
 
 export const dynamic = "force-dynamic";
 
