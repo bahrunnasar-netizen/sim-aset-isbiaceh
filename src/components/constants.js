@@ -110,7 +110,10 @@ export const DATA_BAST = [
 export const MENU_ITEMS = {
   admin: [
     { id:"dashboard",  icon:"🏠", label:"Dashboard"       },
+    { id:"organisasi", icon:"🏛️", label:"Master Organisasi" },
+    { id:"ruangan",    icon:"🗺️", label:"Master Ruangan" },
     { id:"aset",       icon:"📦", label:"Data Aset BMN"   },
+    { id:"kendaraan",  icon:"🚗", label:"Kendaraan BMN"   },
     { id:"bast",       icon:"📋", label:"BAST Aset"       },
     { id:"import",     icon:"🔄", label:"Import SIMAN v2" },
     { id:"peminjaman", icon:"🤝", label:"Peminjaman"      },

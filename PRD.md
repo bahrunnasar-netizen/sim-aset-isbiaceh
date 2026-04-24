@@ -1,17 +1,17 @@
 # Product Requirements Document (PRD)
 
-## SIMA ISBI Aceh
+## SIASET ISBI Aceh
 
-Versi: 1.0  
+Versi: 1.1  
 Tanggal: 24 April 2026  
 Status: Draft Awal Produk  
-Dokumen ini menjadi acuan pengembangan Sistem Informasi Manajemen Aset (SIMA) untuk Institut Seni Budaya Indonesia Aceh.
+Dokumen ini menjadi acuan pengembangan Sistem Informasi Aset (SIASET) untuk Institut Seni Budaya Indonesia Aceh.
 
 ---
 
 ## 1. Ringkasan Produk
 
-SIMA ISBI Aceh adalah sistem informasi berbasis web untuk mendukung pengelolaan aset BMN di lingkungan ISBI Aceh. Sistem ini ditujukan untuk membantu proses pendataan aset, pemantauan kondisi aset, peminjaman aset, serah terima aset melalui BAST, pelaporan, pengelolaan pengguna, serta perencanaan pengadaan.
+SIASET ISBI Aceh adalah sistem informasi berbasis web untuk mendukung pengelolaan aset BMN, sarana, prasarana, ruangan, dan operasional ruang akademik di lingkungan ISBI Aceh. Sistem ini ditujukan untuk membantu proses pendataan aset, pemantauan kondisi aset, peminjaman aset, serah terima aset melalui BAST, pelaporan, pengelolaan pengguna, perencanaan pengadaan, serta dukungan data sarpras untuk kebutuhan akreditasi program studi.
 
 Pada kondisi saat ini, implementasi aplikasi masih berupa prototipe frontend interaktif. PRD ini mendefinisikan kebutuhan produk secara utuh agar sistem dapat dikembangkan menjadi aplikasi operasional yang siap digunakan secara institusional.
 
@@ -27,7 +27,7 @@ Pengelolaan aset di lingkungan perguruan tinggi sering menghadapi beberapa kenda
 - Pelaporan kondisi aset, KIR, dan utilisasi aset memerlukan waktu lama jika dilakukan manual.
 - Rencana pengadaan belum selalu berbasis data kondisi dan kebutuhan riil di lapangan.
 
-SIMA dibutuhkan sebagai satu platform terpadu yang memusatkan data dan proses pengelolaan aset agar lebih tertib, terukur, dan akuntabel.
+SIASET dibutuhkan sebagai satu platform terpadu yang memusatkan data dan proses pengelolaan aset agar lebih tertib, terukur, akuntabel, dan sesuai kebutuhan institusi seni yang memiliki studio, lab, ruang bersama, dan aset pertunjukan.
 
 ---
 
@@ -64,7 +64,15 @@ SIMA dibutuhkan sebagai satu platform terpadu yang memusatkan data dan proses pe
 
 - Login dan manajemen hak akses berbasis peran.
 - Dashboard berbeda per peran.
+- Manajemen master organisasi kampus: jurusan, prodi, unit/UPA.
+- Manajemen master lokasi: kampus, gedung, lantai, ruangan.
+- Klasifikasi penggunaan ruangan: shared, dedicated, mixed.
+- Pengelolaan unit penanggung jawab ruang dan PIC penanggung jawab ruangan.
 - Manajemen master aset BMN.
+- Pengelolaan data aset per prodi dan aset shared.
+- Modul kendaraan BMN.
+- Upload foto aset.
+- QR code aset dan scanner QR/NUP/label SIMAN.
 - Import data aset dari SIMAN melalui file Excel/CSV.
 - Pengelolaan peminjaman aset.
 - Pengajuan pinjam aset oleh pengguna.
@@ -72,6 +80,9 @@ SIMA dibutuhkan sebagai satu platform terpadu yang memusatkan data dan proses pe
 - Pengelolaan BAST aset ke pegawai.
 - Approval BAST oleh pimpinan.
 - Cetak dokumen BAST.
+- Pengelolaan pemeliharaan aset.
+- History pemindahan aset.
+- Laporan sarpras per prodi untuk akreditasi.
 - Pengelolaan pengguna.
 - Pelaporan dan KIR digital.
 - Modul rencana pengadaan aset.
@@ -85,12 +96,17 @@ SIMA dibutuhkan sebagai satu platform terpadu yang memusatkan data dan proses pe
 - Aplikasi mobile native.
 - Workflow penghapusan aset dan lelang.
 - Integrasi barcode scanner perangkat keras khusus.
+- Integrasi penuh ke sistem akademik kampus.
 
 ---
 
 ## 5. Pemangku Kepentingan
 
 - Unit Umum / Pengelola BMN
+- Unit Sarpras / Bagian Umum
+- Jurusan
+- Program Studi
+- UPA Bahasa / unit penunjang
 - Pimpinan ISBI Aceh
 - PJ Ruangan / unit kerja
 - Pegawai peminjam / penerima aset
@@ -115,6 +131,7 @@ Kebutuhan:
 - Data lengkap dan mudah dicari.
 - Workflow approval yang jelas.
 - Kemudahan cetak dokumen.
+- Kemudahan menarik laporan sarpras per prodi dan ruangan.
 
 ### 6.2 PJ Ruangan
 
@@ -127,6 +144,7 @@ Kebutuhan:
 - Filter aset per ruangan.
 - Ringkasan kondisi aset.
 - Laporan KIR ruangan.
+- Kejelasan unit penanggung jawab ruang dan PIC ruang.
 
 ### 6.3 Peminjam
 
@@ -152,6 +170,18 @@ Kebutuhan:
 - Approval cepat.
 - Laporan yang mendukung keputusan.
 
+### 6.5 Prodi / Pengelola Akreditasi
+
+Tanggung jawab:
+- Mengakses data sarana dan prasarana prodi untuk kebutuhan akreditasi.
+- Memverifikasi ruang inti prodi, ruang bersama, dan aset pendukung.
+- Menarik rekap aset dan ruang per prodi.
+
+Kebutuhan:
+- Filter data per prodi.
+- Pemisahan ruang dedicated, mixed, dan shared.
+- Export Excel/PDF yang siap dipakai.
+
 ---
 
 ## 7. Problem Statement
@@ -176,6 +206,7 @@ SIMA harus menyelesaikan masalah ini dengan satu sumber data yang konsisten dan 
 - Efisiensi: proses input, approval, dan pelaporan lebih cepat.
 - Keterlacakan: histori aset, pinjaman, dan BAST dapat ditelusuri.
 - Dukungan keputusan: pimpinan memiliki data ringkas yang relevan.
+- Dukungan akreditasi: data sarpras prodi dapat ditarik tanpa input ulang manual.
 
 ---
 
@@ -245,6 +276,156 @@ Kebutuhan fungsional:
 - Filter berdasarkan kondisi, status, kategori, ruangan, dan unit.
 - Ekspor data aset ke Excel/PDF.
 - Cetak QR atau label aset.
+- Sistem membedakan aset `shared` dan `dedicated`.
+- Aset dedicated dapat dihubungkan langsung ke prodi pemilik.
+- Aset shared tetap memiliki lokasi fisik dan unit penanggung jawab.
+- Setiap aset dapat menyimpan maksimal 3 foto.
+- Sistem mendukung upload foto terkompresi dan penyimpanan cloud.
+
+### 9.3E Modul Kendaraan BMN
+
+Deskripsi:
+Modul khusus untuk pengelolaan kendaraan BMN yang membutuhkan identitas kendaraan lengkap, pengingat pajak/STNK, service berkala, histori perbaikan, dan rekap biaya pemeliharaan.
+
+Data minimum kendaraan:
+- Nomor polisi
+- Kode aset / ID internal
+- NUP
+- Merk
+- Tipe / model
+- Tahun kendaraan
+- Nomor BPKB
+- Nomor STNK
+- Nomor rangka
+- Nomor mesin
+- Tanggal jatuh tempo pajak
+- Tanggal jatuh tempo STNK
+- Tanggal service terakhir
+- Tanggal service berikutnya
+- Status kendaraan
+- Kondisi kendaraan
+- Unit penanggung jawab
+- Ruangan / lokasi parkir
+
+Status kendaraan minimum:
+- Aktif
+- Rusak
+- Dijual
+- Tidak Aktif
+
+Kebutuhan fungsional:
+- Admin dapat menambah dan mengubah master data kendaraan BMN.
+- Sistem mendukung upload maksimal 3 foto kendaraan.
+- Sistem menampilkan dashboard kendaraan BMN.
+- Sistem menampilkan kendaraan yang pajaknya akan jatuh tempo.
+- Sistem menyimpan histori pembayaran pajak.
+- Sistem memberikan alert H-90, H-30, H-7, dan H-0 sebelum jatuh tempo pajak/STNK.
+- Sistem memberikan reminder service berkala bulanan atau berdasarkan tanggal tertentu.
+- Sistem menyimpan histori service/perbaikan kendaraan.
+- Sistem mencatat bengkel, jenis pekerjaan, biaya service, dan kondisi setelah service.
+- Sistem menyediakan laporan rekap biaya pemeliharaan per kendaraan.
+- Sistem menyediakan laporan history pajak tahunan.
+- Sistem menyediakan export laporan kendaraan untuk audit.
+
+### 9.3A Master Organisasi
+
+Deskripsi:
+Modul untuk mengelola struktur organisasi kampus yang menjadi fondasi relasi data ruang dan aset.
+
+Entitas minimum:
+- Jurusan
+- Prodi
+- Unit/UPA
+
+Data minimum jurusan:
+- Kode jurusan
+- Nama jurusan
+- Status aktif
+
+Data minimum prodi:
+- Kode prodi
+- Nama prodi
+- Jurusan
+- Status aktif
+- Indikator memiliki studio/lab atau tidak
+
+Data minimum unit:
+- Kode unit
+- Nama unit
+- Jenis unit
+- Status aktif
+
+Kebutuhan fungsional:
+- Admin dapat mengelola data jurusan, prodi, dan unit.
+- Satu prodi harus terhubung ke satu jurusan.
+- Unit dapat berdiri sendiri di luar jurusan.
+- Struktur ini harus bisa dipakai oleh modul ruangan, aset, laporan, dan akreditasi.
+
+### 9.3B Master Lokasi dan Master Ruangan
+
+Deskripsi:
+Modul untuk mengelola hierarki lokasi kampus dan data ruangan beserta pola penggunaannya.
+
+Hierarki lokasi:
+- Kampus
+- Gedung
+- Lantai
+- Ruangan
+
+Jenis penggunaan ruangan:
+- Shared
+- Dedicated
+- Mixed
+
+Data minimum ruangan:
+- Kampus
+- Gedung
+- Lantai
+- Kode ruangan
+- Nama ruangan
+- Jenis ruang
+- Luas meter persegi
+- Kapasitas orang
+- Jenis penggunaan
+- Pengelola utama
+- Unit penanggung jawab ruang
+- PIC penanggung jawab ruangan
+- Status kepemilikan
+- Status DBR
+- Keterangan
+
+Kebutuhan fungsional:
+- Admin dapat menambah, mengubah, dan menonaktifkan data ruangan.
+- Sistem harus membedakan `shared`, `dedicated`, dan `mixed`.
+- `Lab Bahasa` di Gedung Utama harus tercatat sebagai ruang berbeda dari studio/lab di Gedung G13 Kampus C.
+- Sistem harus mendukung satu ruangan dipakai banyak prodi.
+- Sistem harus mendukung prodi tanpa studio/lab khusus.
+- Sistem harus menyimpan unit penanggung jawab ruang dan PIC ruang secara terpisah.
+- Ruangan dapat ditandai sebagai ruang inti prodi, ruang bersama, atau ruang pendukung umum pada laporan.
+- Sistem harus dapat memantau status DBR per ruang.
+
+### 9.3C Laporan Sarpras Prodi dan Akreditasi
+
+Deskripsi:
+Modul pelaporan untuk menarik data ruang dan aset per prodi secara otomatis untuk kebutuhan akreditasi.
+
+Kebutuhan fungsional:
+- Laporan dapat difilter berdasarkan jurusan, prodi, kampus, gedung, dan jenis penggunaan ruang.
+- Laporan harus memisahkan ruang inti prodi, ruang mixed, dan ruang shared.
+- Laporan harus mendukung prodi yang tidak memiliki studio/lab khusus.
+- Sistem dapat menampilkan aset dedicated prodi dan aset shared yang mendukung prodi.
+- Hasil export tersedia dalam Excel dan PDF.
+
+### 9.3D QR, Barcode, dan Scanner Aset
+
+Deskripsi:
+Modul identifikasi cepat aset melalui label QR, barcode, atau NUP.
+
+Kebutuhan fungsional:
+- Sistem dapat menghasilkan QR code per aset.
+- Sistem dapat memindai QR/label SIMAN/barcode/NUP.
+- Hasil scan langsung menampilkan detail aset, lokasi, kondisi, dan status.
+- Scanner dapat digunakan untuk kebutuhan inventarisasi lapangan.
 
 ### 9.4 Import Data SIMAN
 
@@ -438,6 +619,48 @@ Kebutuhan fungsional:
 - Notifikasi pengembalian mendekati jatuh tempo.
 - Notifikasi hasil approval.
 - Aktivitas terbaru tampil di dashboard sesuai hak akses.
+- Reminder pemeliharaan berkala.
+- Alert aset rusak.
+- Alert peminjaman overdue.
+- Reminder masa berlaku PKS atau pinjam pakai lokasi tertentu.
+- Reminder pajak kendaraan dan STNK.
+- Reminder service berkala kendaraan.
+- Integrasi WhatsApp notifikasi untuk kasus yang disetujui pada tahap implementasi lanjutan.
+
+### 9.13 Manajemen Pemeliharaan
+
+Deskripsi:
+Modul untuk menjadwalkan pemeliharaan, mencatat riwayat perbaikan, dan mengelola usulan penghapusan aset.
+
+Kebutuhan fungsional:
+- Admin dapat membuat jadwal pemeliharaan aset.
+- Sistem menyimpan history pemeliharaan dan perbaikan.
+- Sistem dapat menandai aset yang memerlukan perbaikan.
+- Sistem dapat menyimpan usulan penghapusan aset.
+- Riwayat pemeliharaan harus terhubung ke aset dan unit penanggung jawab.
+- Riwayat pemeliharaan kendaraan harus mendukung biaya, bengkel, dan kondisi hasil service.
+
+### 9.14 History Pemindahan Aset
+
+Deskripsi:
+Modul untuk melacak perpindahan aset antar ruangan, unit, atau penanggung jawab.
+
+Kebutuhan fungsional:
+- Sistem mencatat ruangan asal dan ruangan tujuan.
+- Sistem mencatat waktu perpindahan, alasan, dan pelaksana.
+- Sistem memperbarui lokasi aktif aset.
+- Sistem menyimpan histori perpindahan untuk kebutuhan audit.
+
+### 9.15 Fitur Khusus Institut Seni
+
+Deskripsi:
+Modul khusus yang menyesuaikan kebutuhan kampus seni.
+
+Kebutuhan fungsional:
+- Sistem dapat melacak alat pertunjukan dipakai untuk event mana.
+- Sistem dapat mendukung booking studio per prodi.
+- Sistem dapat mengelola inventaris kostum dan properti.
+- Sistem dapat menyimpan dokumentasi event beserta aset yang dipakai.
 
 ---
 
@@ -467,12 +690,14 @@ Kebutuhan fungsional:
 ### 10.4 Pencarian dan Filter
 
 - Sistem harus menyediakan pencarian cepat pada daftar aset, pinjaman, pengguna, dan BAST.
+- Sistem harus menyediakan pencarian cepat pada daftar ruangan, lokasi, jurusan, prodi, dan unit.
 - Filter harus tetap responsif pada data besar.
 
 ### 10.5 Ekspor dan Cetak
 
 - Sistem harus mendukung ekspor PDF dan Excel pada modul utama.
 - Hasil cetak harus rapi pada kertas A4.
+- Laporan sarpras prodi harus dapat diunduh tanpa perlu penyusunan ulang manual.
 
 ---
 
@@ -525,6 +750,16 @@ Kebutuhan fungsional:
 - Pengajuan pinjaman harus memiliki tanggal pinjam dan tanggal kembali.
 - Laporan yang diekspor harus mengikuti filter aktif.
 - Perubahan status aset harus sinkron dengan transaksi pinjaman dan BAST.
+- Semua ruangan harus memiliki unit penanggung jawab ruang.
+- Semua ruangan harus memiliki PIC penanggung jawab ruangan minimal satu.
+- Ruangan `shared` tidak boleh diklaim sebagai milik eksklusif satu prodi.
+- Ruangan `dedicated` harus memiliki satu prodi utama.
+- Ruangan `mixed` boleh dipakai oleh lebih dari satu prodi dan/atau dikelola unit tertentu.
+- Prodi dapat tidak memiliki studio/lab khusus.
+- Lab Bahasa di Gedung Utama adalah ruang yang berbeda dari studio/lab di Gedung G13 Kampus C.
+- Kendaraan BMN wajib memiliki identitas kendaraan yang lengkap minimal nopol, nomor rangka, dan nomor mesin.
+- Reminder pajak kendaraan harus mendukung H-90, H-30, H-7, dan H-0.
+- Reminder service kendaraan dapat diatur bulanan atau berdasarkan tanggal service berikutnya.
 
 ---
 
@@ -581,9 +816,20 @@ Kebutuhan fungsional:
 
 - User
 - Role
+- Jurusan
+- Prodi
+- Unit
+- Kampus
+- Gedung
+- Lantai
+- Ruangan
+- RuanganProdiPengguna
 - UnitKerja
 - Ruangan
 - Aset
+- Kendaraan
+- PajakKendaraan
+- ServiceKendaraan
 - KategoriAset
 - ImportLog
 - Peminjaman
@@ -596,10 +842,17 @@ Kebutuhan fungsional:
 ### 14.2 Relasi Umum
 
 - Satu user memiliki satu role.
+- Satu prodi memiliki satu jurusan.
+- Satu unit dapat menjadi penanggung jawab banyak ruangan.
+- Satu ruangan berada dalam satu gedung dan satu kampus.
+- Satu ruangan dapat dipakai oleh banyak prodi.
 - Satu user dapat terkait ke satu unit kerja.
 - Satu ruangan memiliki banyak aset.
 - Satu aset dapat memiliki banyak histori peminjaman.
 - Satu aset dapat memiliki banyak histori BAST secara berurutan, tetapi tidak aktif bersamaan.
+- Satu aset dapat diklasifikasikan sebagai kendaraan BMN.
+- Satu kendaraan memiliki banyak histori pajak.
+- Satu kendaraan memiliki banyak histori service.
 - Satu BAST minimal memiliki satu item aset.
 - Satu pengajuan pengadaan berasal dari satu unit kerja.
 
@@ -618,8 +871,82 @@ Kebutuhan fungsional:
 - tahun_perolehan
 - spesifikasi
 - sumber_data
+- ownership_type
+- prodi_owner_id
+- unit_penanggung_jawab_id
+- ruangan_id
 - created_at
 - updated_at
+
+### 14.3A Field Kritis Ruangan
+
+- id
+- kampus_id
+- gedung_id
+- lantai
+- kode_ruangan
+- nama_ruangan
+- jenis_ruang
+- jenis_penggunaan
+- luas_m2
+- kapasitas_orang
+- status_kepemilikan
+- status_dbr
+- unit_penanggung_jawab_id
+- pic_penanggung_jawab_user_id atau pic_penanggung_jawab_nama
+- pengelola_utama_tipe
+- pengelola_utama_id
+- status_aktif
+- keterangan
+
+### 14.3B Field Kritis RuanganProdiPengguna
+
+- id
+- ruangan_id
+- prodi_id
+- peran_penggunaan
+- is_for_akreditasi
+- catatan
+
+### 14.3C Field Kritis Kendaraan
+
+- id
+- aset_id
+- nomor_polisi
+- nomor_bpkb
+- nomor_stnk
+- nomor_rangka
+- nomor_mesin
+- merk
+- tipe
+- tahun
+- tanggal_jatuh_tempo_pajak
+- tanggal_jatuh_tempo_stnk
+- tanggal_service_terakhir
+- tanggal_service_berikutnya
+- status_kendaraan
+- lokasi_parkir
+
+### 14.3D Field Kritis Pajak Kendaraan
+
+- id
+- kendaraan_id
+- periode_pajak
+- tanggal_jatuh_tempo
+- tanggal_bayar
+- nominal
+- keterangan
+
+### 14.3E Field Kritis Service Kendaraan
+
+- id
+- kendaraan_id
+- tanggal_service
+- bengkel
+- jenis_pekerjaan
+- biaya
+- kondisi_setelah_service
+- tanggal_service_berikutnya
 
 ### 14.4 Field Kritis BAST
 
@@ -662,9 +989,12 @@ Kebutuhan fungsional:
 ### 16.1 KPI Operasional
 
 - 100% aset aktif tercatat di sistem.
+- 100% ruang aktif tercatat dengan kampus, gedung, kode, unit penanggung jawab, dan status DBR.
+- 100% kendaraan BMN aktif tercatat dengan identitas lengkap dan jadwal pajak.
 - 100% BAST baru terdokumentasi di sistem.
 - Minimal 90% pengajuan pinjaman diproses melalui sistem.
 - Waktu pencarian data aset turun signifikan dibanding cara manual.
+- Laporan sarpras prodi dapat dihasilkan otomatis tanpa input ulang manual.
 
 ### 16.2 KPI Adopsi
 
@@ -685,14 +1015,20 @@ Kebutuhan fungsional:
 ### 17.1 MVP
 
 - Login dan role-based access
+- Master organisasi kampus
+- Master lokasi dan master ruangan
 - Dashboard dasar per role
 - Master data aset
+- Modul kendaraan BMN dasar
+- Reminder pajak dan STNK kendaraan
+- Klasifikasi shared/dedicated/mixed
 - Import SIMAN via file
 - Peminjaman dasar
 - BAST dasar
 - Approval BAST
 - Cetak BAST
 - Laporan dasar
+- Laporan sarpras prodi
 
 ### 17.2 Rilis 2
 
@@ -701,6 +1037,13 @@ Kebutuhan fungsional:
 - Manajemen pengguna penuh
 - Laporan lanjutan dan ekspor lebih lengkap
 - Modul pengadaan yang lebih matang
+- Upload foto aset
+- Reminder service kendaraan
+- History pajak kendaraan
+- History service kendaraan
+- History pemindahan aset
+- Jadwal pemeliharaan dan history perbaikan
+- QR/barcode scanner
 
 ### 17.3 Rilis 3
 
@@ -708,6 +1051,12 @@ Kebutuhan fungsional:
 - Tanda tangan elektronik
 - Workflow disposisi/approval lebih kompleks
 - Analitik aset lanjutan
+- Dashboard kendaraan BMN lanjutan
+- Integrasi notifikasi kendaraan ke WhatsApp
+- Booking studio
+- Inventaris kostum dan properti
+- Dokumentasi event
+- Integrasi WhatsApp notifikasi
 
 ---
 
@@ -731,7 +1080,10 @@ Mitigasi:
 ## 19. Dependensi
 
 - Kejelasan struktur organisasi dan kewenangan approval.
+- Kejelasan master kampus, gedung, ruangan, unit penanggung jawab, dan PIC ruang.
 - Ketersediaan data aset awal dari sumber resmi.
+- Ketersediaan data DBR ruangan yang valid dan mutakhir.
+- Ketersediaan data kendaraan BMN beserta informasi pajak/STNK awal.
 - Keputusan format dokumen BAST resmi.
 - Infrastruktur hosting dan database.
 - Dukungan tim IT untuk pemeliharaan sistem.
@@ -742,6 +1094,8 @@ Mitigasi:
 
 - ISBI Aceh membutuhkan sistem web internal yang dapat diakses melalui browser modern.
 - Data aset awal tersedia dari hasil ekspor SIMAN atau sumber administrasi resmi.
+- Data ruangan awal tersedia dari daftar keterangan ruangan dan DBR internal kampus.
+- Data kendaraan awal tersedia dari dokumen inventaris kendaraan BMN internal.
 - Proses approval tetap dilakukan oleh pimpinan internal.
 - Dokumen BAST cetak masih menjadi kebutuhan utama, meskipun nantinya bisa berkembang ke format digital penuh.
 
@@ -974,7 +1328,12 @@ Agar transisi dari prototipe ke production lebih mulus, langkah teknis yang dire
 Sistem dinyatakan memenuhi kebutuhan dasar jika:
 
 - Pengguna dapat login dan hanya melihat fitur sesuai rolenya.
+- Admin dapat mengelola master organisasi, lokasi, dan ruangan.
+- Sistem dapat membedakan ruang shared, dedicated, dan mixed.
+- Sistem dapat menyimpan unit penanggung jawab ruang dan PIC ruang.
 - Admin dapat melihat dan mengelola daftar aset.
+- Admin dapat melihat dan mengelola daftar kendaraan BMN.
+- Sistem dapat menghasilkan reminder pajak/STNK kendaraan.
 - Admin dapat mengimpor data aset dari file dan hasilnya tersimpan.
 - Peminjam dapat mengajukan pinjam aset.
 - Transaksi pinjam dapat disetujui, ditolak, dan diselesaikan.
@@ -983,6 +1342,7 @@ Sistem dinyatakan memenuhi kebutuhan dasar jika:
 - BAST yang disetujui dapat dicetak dalam format resmi.
 - Status aset berubah konsisten mengikuti proses pinjam atau BAST.
 - Laporan dasar dapat ditampilkan dan diekspor.
+- Laporan sarpras prodi dapat dihasilkan berdasarkan relasi prodi, ruang, dan aset.
 
 ---
 

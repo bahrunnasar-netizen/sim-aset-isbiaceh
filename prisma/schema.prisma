@@ -1,0 +1,401 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RoomUsageType {
+  SHARED
+  DEDICATED
+  MIXED
+}
+
+enum RoomOwnershipStatus {
+  BMN
+  PINJAM_PAKAI
+  HIBAH
+  LAINNYA
+}
+
+enum DBRStatus {
+  SUDAH
+  BELUM
+}
+
+enum ManagerType {
+  INSTITUSI
+  JURUSAN
+  PRODI
+  UNIT
+}
+
+enum RoomUsageRole {
+  UTAMA
+  PENGGUNA
+  PENDUKUNG_AKREDITASI
+}
+
+enum AssetOwnershipType {
+  SHARED
+  DEDICATED
+}
+
+enum AssetCondition {
+  BAIK
+  RUSAK_RINGAN
+  RUSAK_BERAT
+}
+
+enum AssetStatus {
+  TERSEDIA
+  DIPINJAM
+  DISERAHKAN_BAST
+  TIDAK_AKTIF
+  HILANG
+}
+
+enum AssetType {
+  UMUM
+  KENDARAAN
+}
+
+enum VehicleStatus {
+  AKTIF
+  RUSAK
+  DIJUAL
+  TIDAK_AKTIF
+}
+
+enum UserRoleType {
+  ADMIN
+  PJ_RUANGAN
+  PEMINJAM
+  PIMPINAN
+}
+
+enum UnitType {
+  UPA
+  SARPRAS
+  PERPUSTAKAAN
+  JURUSAN
+  PRODI
+  ADMINISTRASI
+  LAINNYA
+}
+
+model Role {
+  id          String    @id @default(cuid())
+  code        UserRoleType @unique
+  name        String
+  description String?
+  users       User[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  roleId                String
+  unitId                String?
+  jurusanId             String?
+  prodiId               String?
+  name                  String
+  username              String                 @unique
+  email                 String?                @unique
+  nip                   String?
+  passwordHash          String?
+  isActive              Boolean                @default(true)
+  role                  Role                   @relation(fields: [roleId], references: [id])
+  unit                  Unit?                  @relation(fields: [unitId], references: [id])
+  jurusan               Jurusan?               @relation(fields: [jurusanId], references: [id])
+  prodi                 Prodi?                 @relation(fields: [prodiId], references: [id])
+  responsibleRooms      Ruangan[]              @relation("RoomResponsibleUser")
+  assetTransfersHandled AssetTransferHistory[]
+  activityLogs          ActivityLog[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@index([roleId])
+  @@index([unitId])
+  @@index([jurusanId])
+  @@index([prodiId])
+}
+
+model Jurusan {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  isActive    Boolean  @default(true)
+  prodis      Prodi[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Prodi {
+  id                       String             @id @default(cuid())
+  jurusanId                String
+  code                     String             @unique
+  name                     String
+  hasDedicatedStudioOrLab  Boolean            @default(false)
+  isActive                 Boolean            @default(true)
+  jurusan                  Jurusan            @relation(fields: [jurusanId], references: [id])
+  users                    User[]
+  roomUsages               RoomProdiUsage[]
+  ownedAssets              Asset[]
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
+
+  @@index([jurusanId])
+}
+
+model Unit {
+  id               String      @id @default(cuid())
+  code             String      @unique
+  name             String
+  type             UnitType
+  isActive         Boolean     @default(true)
+  users            User[]
+  responsibleRooms Ruangan[]   @relation("RoomResponsibleUnit")
+  responsibleAssets Asset[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model Kampus {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  name        String
+  address     String?
+  isActive    Boolean   @default(true)
+  gedungs     Gedung[]
+  ruangans    Ruangan[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Gedung {
+  id          String    @id @default(cuid())
+  kampusId    String
+  code        String
+  name        String
+  isActive    Boolean   @default(true)
+  kampus      Kampus    @relation(fields: [kampusId], references: [id])
+  ruangans    Ruangan[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([kampusId, code])
+  @@index([kampusId])
+}
+
+model Ruangan {
+  id                     String              @id @default(cuid())
+  kampusId               String
+  gedungId               String
+  unitPenanggungJawabId  String
+  picPenanggungJawabUserId String?
+  lantai                 String?
+  code                   String              @unique
+  name                   String
+  roomType               String
+  usageType              RoomUsageType
+  areaM2                 Decimal?            @db.Decimal(10, 2)
+  capacity               Int?
+  ownershipStatus        RoomOwnershipStatus
+  dbrStatus              DBRStatus
+  responsiblePicName     String?
+  managerType            ManagerType
+  managerReferenceId     String?
+  isActive               Boolean             @default(true)
+  notes                  String?
+  kampus                 Kampus              @relation(fields: [kampusId], references: [id])
+  gedung                 Gedung              @relation(fields: [gedungId], references: [id])
+  unitPenanggungJawab    Unit                @relation("RoomResponsibleUnit", fields: [unitPenanggungJawabId], references: [id])
+  picPenanggungJawabUser User?               @relation("RoomResponsibleUser", fields: [picPenanggungJawabUserId], references: [id])
+  prodiUsages            RoomProdiUsage[]
+  assets                 Asset[]
+  assetTransfersFrom     AssetTransferHistory[] @relation("TransferFromRoom")
+  assetTransfersTo       AssetTransferHistory[] @relation("TransferToRoom")
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  @@index([kampusId])
+  @@index([gedungId])
+  @@index([unitPenanggungJawabId])
+  @@index([picPenanggungJawabUserId])
+  @@index([usageType])
+  @@index([name])
+}
+
+model RoomProdiUsage {
+  id               String        @id @default(cuid())
+  ruanganId        String
+  prodiId          String
+  usageRole        RoomUsageRole
+  isForAccreditation Boolean     @default(true)
+  notes            String?
+  ruangan          Ruangan       @relation(fields: [ruanganId], references: [id])
+  prodi            Prodi         @relation(fields: [prodiId], references: [id])
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@unique([ruanganId, prodiId])
+  @@index([prodiId])
+}
+
+model Asset {
+  id                   String              @id @default(cuid())
+  ruanganId            String?
+  prodiOwnerId         String?
+  unitPenanggungJawabId String?
+  code                 String              @unique
+  nup                  String?
+  name                 String
+  category             String
+  assetType            AssetType           @default(UMUM)
+  ownershipType        AssetOwnershipType
+  condition            AssetCondition
+  status               AssetStatus
+  acquisitionValue     Decimal?            @db.Decimal(18, 2)
+  acquisitionYear      Int?
+  specification        String?
+  sourceData           String?
+  ruangan              Ruangan?            @relation(fields: [ruanganId], references: [id])
+  prodiOwner           Prodi?              @relation(fields: [prodiOwnerId], references: [id])
+  unitPenanggungJawab  Unit?               @relation(fields: [unitPenanggungJawabId], references: [id])
+  vehicle              Vehicle?
+  photos               AssetPhoto[]
+  transferHistories    AssetTransferHistory[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@index([ruanganId])
+  @@index([prodiOwnerId])
+  @@index([unitPenanggungJawabId])
+  @@index([assetType])
+  @@index([ownershipType])
+  @@index([status])
+  @@index([condition])
+  @@index([name])
+}
+
+model Vehicle {
+  id                   String          @id @default(cuid())
+  assetId              String          @unique
+  plateNumber          String          @unique
+  bpkbNumber           String?
+  stnkNumber           String?
+  chassisNumber        String
+  engineNumber         String
+  brand                String
+  model                String?
+  manufactureYear      Int?
+  taxDueDate           DateTime
+  stnkDueDate          DateTime?
+  lastServiceDate      DateTime?
+  nextServiceDate      DateTime?
+  vehicleStatus        VehicleStatus   @default(AKTIF)
+  parkingLocation      String?
+  notes                String?
+  asset                Asset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  taxHistories         VehicleTaxHistory[]
+  serviceHistories     VehicleServiceHistory[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@index([taxDueDate])
+  @@index([stnkDueDate])
+  @@index([nextServiceDate])
+  @@index([vehicleStatus])
+}
+
+model VehicleTaxHistory {
+  id          String    @id @default(cuid())
+  vehicleId   String
+  taxPeriod   String?
+  dueDate     DateTime
+  paidDate    DateTime?
+  amount      Decimal?  @db.Decimal(18, 2)
+  notes       String?
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([dueDate])
+  @@index([paidDate])
+}
+
+model VehicleServiceHistory {
+  id                 String    @id @default(cuid())
+  vehicleId          String
+  serviceDate        DateTime
+  workshopName       String?
+  workDescription    String
+  cost               Decimal?  @db.Decimal(18, 2)
+  conditionAfter     String?
+  nextServiceDate    DateTime?
+  notes              String?
+  vehicle            Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([vehicleId])
+  @@index([serviceDate])
+  @@index([nextServiceDate])
+}
+
+model AssetPhoto {
+  id                 String   @id @default(cuid())
+  assetId            String
+  photoUrl           String
+  sortOrder          Int
+  cloudinaryPublicId String?
+  asset              Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  createdAt          DateTime @default(now())
+
+  @@unique([assetId, sortOrder])
+  @@index([assetId])
+}
+
+model AssetTransferHistory {
+  id                String    @id @default(cuid())
+  assetId           String
+  fromRoomId        String?
+  toRoomId          String?
+  fromUnitId        String?
+  toUnitId          String?
+  handledByUserId   String?
+  movedAt           DateTime
+  reason            String?
+  asset             Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  fromRoom          Ruangan?  @relation("TransferFromRoom", fields: [fromRoomId], references: [id])
+  toRoom            Ruangan?  @relation("TransferToRoom", fields: [toRoomId], references: [id])
+  handledByUser     User?     @relation(fields: [handledByUserId], references: [id])
+  createdAt         DateTime  @default(now())
+
+  @@index([assetId])
+  @@index([fromRoomId])
+  @@index([toRoomId])
+  @@index([handledByUserId])
+  @@index([movedAt])
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  entityType  String
+  entityId    String?
+  description String?
+  metadata    Json?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

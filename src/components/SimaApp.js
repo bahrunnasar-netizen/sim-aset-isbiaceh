@@ -3,6 +3,10 @@ import { useState } from "react";
 import { C, ROLES, MENU_ITEMS } from "./constants";
 import LoginScreen from "./LoginScreen";
 import Sidebar from "./Sidebar";
+import MasterAssetPage from "./MasterAssetPage";
+import MasterOrganizationPage from "./MasterOrganizationPage";
+import MasterRoomPage from "./MasterRoomPage";
+import VehicleBMNPage from "./VehicleBMNPage";
 import {
   DashboardPage, AsetPage, ImportPage, PeminjamanPage,
   PinjamBaruPage, LaporanPage, PenggunaPage, PengadaanPage,
@@ -32,7 +36,10 @@ export default function SimaApp() {
     switch (page) {
       case "bast":        return <BASTPage        {...props} />;
       case "dashboard":   return <DashboardPage   {...props} />;
-      case "aset":        return <AsetPage         {...props} />;
+      case "organisasi":  return <MasterOrganizationPage {...props} />;
+      case "ruangan":     return <MasterRoomPage {...props} />;
+      case "aset":        return role === "admin" ? <MasterAssetPage {...props} /> : <AsetPage {...props} />;
+      case "kendaraan":   return <VehicleBMNPage {...props} />;
       case "import":      return <ImportPage        {...props} />;
       case "peminjaman":  return <PeminjamanPage    {...props} />;
       case "pinjam_baru": return <PinjamBaruPage    {...props} />;
