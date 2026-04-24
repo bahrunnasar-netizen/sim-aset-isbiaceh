@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { buildVehicleReminderDigest } from "@/lib/vehicle-reminders";
 
+export const dynamic = "force-dynamic";
+
 const vehicleInclude = {
   asset: {
     include: {

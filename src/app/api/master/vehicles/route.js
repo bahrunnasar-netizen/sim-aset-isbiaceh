@@ -9,6 +9,8 @@ import {
 } from "@prisma/client";
 import { buildVehicleReminderDigest, computeVehicleSummary } from "@/lib/vehicle-reminders";
 
+export const dynamic = "force-dynamic";
+
 const allowedOwnershipTypes = new Set(Object.values(AssetOwnershipType));
 const allowedConditions = new Set(Object.values(AssetCondition));
 const allowedStatuses = new Set(Object.values(AssetStatus));
