@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { UnitType } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 function badRequest(message) {
   return NextResponse.json({ error: message }, { status: 400 });
 }

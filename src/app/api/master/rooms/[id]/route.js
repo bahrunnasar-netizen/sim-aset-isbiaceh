@@ -8,6 +8,8 @@ import {
   RoomUsageType,
 } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 const allowedUsageTypes = new Set(Object.values(RoomUsageType));
 const allowedOwnershipStatuses = new Set(Object.values(RoomOwnershipStatus));
 const allowedDBRStatuses = new Set(Object.values(DBRStatus));
