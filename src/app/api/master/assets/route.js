@@ -120,16 +120,34 @@ async function buildAssetPayload(body) {
   };
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const [assets, rooms, prodi, units] = await Promise.all([
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(Math.max(Number(searchParams.get("limit") || 500), 1), 1000);
+    const keyword = String(searchParams.get("q") || "").trim();
+    const where = {
+      assetType: AssetType.UMUM,
+      ...(keyword
+        ? {
+            OR: [
+              { code: { contains: keyword, mode: "insensitive" } },
+              { nup: { contains: keyword, mode: "insensitive" } },
+              { name: { contains: keyword, mode: "insensitive" } },
+              { category: { contains: keyword, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
+
+    const [assets, totalAssets, simanImported, rooms, prodi, units] = await Promise.all([
       prisma.asset.findMany({
-        where: {
-          assetType: AssetType.UMUM,
-        },
+        where,
         include: assetInclude,
         orderBy: { name: "asc" },
+        take: limit,
       }),
+      prisma.asset.count({ where: { assetType: AssetType.UMUM } }),
+      prisma.asset.count({ where: { sourceData: "SIMAN_V2_IMPORT" } }),
       prisma.ruangan.findMany({
         include: {
           kampus: true,
@@ -146,7 +164,18 @@ export async function GET() {
       }),
     ]);
 
-    return NextResponse.json({ assets, rooms, prodi, units });
+    return NextResponse.json({
+      assets,
+      rooms,
+      prodi,
+      units,
+      summary: {
+        total: totalAssets,
+        simanImported,
+        returned: assets.length,
+        limit,
+      },
+    });
   } catch (error) {
     console.error("GET /api/master/assets failed:", error);
     return NextResponse.json(

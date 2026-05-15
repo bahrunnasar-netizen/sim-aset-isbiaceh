@@ -26,7 +26,7 @@ const initialForm = {
 };
 
 export default function MasterAssetPage({ showNotif, searchQ }) {
-  const [data, setData] = useState({ assets: [], rooms: [], prodi: [], units: [] });
+  const [data, setData] = useState({ assets: [], rooms: [], prodi: [], units: [], summary: null });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -232,7 +232,9 @@ export default function MasterAssetPage({ showNotif, searchQ }) {
           <div style={{ padding: "16px 18px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700 }}>Daftar Aset</div>
-              <div style={{ fontSize: 12, color: C.textMuted }}>Total {filteredAssets.length} aset</div>
+              <div style={{ fontSize: 12, color: C.textMuted }}>
+                Menampilkan {filteredAssets.length} dari {data.summary?.total ?? filteredAssets.length} aset
+              </div>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <select value={filter} onChange={(event) => setFilter(event.target.value)} style={{ ...inputStyle, width: 160 }}>
