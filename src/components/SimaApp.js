@@ -7,8 +7,9 @@ import MasterAssetPage from "./MasterAssetPage";
 import MasterOrganizationPage from "./MasterOrganizationPage";
 import MasterRoomPage from "./MasterRoomPage";
 import VehicleBMNPage from "./VehicleBMNPage";
+import ImportSimanPage from "./ImportSimanPage";
 import {
-  DashboardPage, AsetPage, ImportPage, PeminjamanPage,
+  DashboardPage, AsetPage, PeminjamanPage,
   PinjamBaruPage, LaporanPage, PenggunaPage, PengadaanPage,
   BASTPage,
 } from "./Pages";
@@ -40,7 +41,7 @@ export default function SimaApp() {
       case "ruangan":     return <MasterRoomPage {...props} />;
       case "aset":        return role === "admin" ? <MasterAssetPage {...props} /> : <AsetPage {...props} />;
       case "kendaraan":   return <VehicleBMNPage {...props} />;
-      case "import":      return <ImportPage        {...props} />;
+      case "import":      return <ImportSimanPage   {...props} />;
       case "peminjaman":  return <PeminjamanPage    {...props} />;
       case "pinjam_baru": return <PinjamBaruPage    {...props} />;
       case "laporan":     return <LaporanPage       {...props} />;
