@@ -7,6 +7,7 @@ export default function ImportSimanPage({ showNotif }) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(null);
 
   async function uploadSiman(commit = false) {
     if (!file) {
@@ -34,10 +35,62 @@ export default function ImportSimanPage({ showNotif }) {
         showNotif(result.message || "Data SIMAN berhasil disimpan.");
         setPreview(null);
         setFile(null);
+        setSaveProgress(null);
       } else {
         setPreview(result);
         showNotif("Preview import berhasil dibuat.");
       }
+    } catch (error) {
+      showNotif(error.message, "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveAllBatches() {
+    if (!file || !preview) {
+      showNotif("Preview file SIMAN dulu sebelum menyimpan.", "error");
+      return;
+    }
+
+    setBusy(true);
+    setSaveProgress({ processed: 0, total: preview.validRows, created: 0, updated: 0 });
+
+    try {
+      let offset = 0;
+      let created = 0;
+      let updated = 0;
+      const batchSize = 250;
+
+      while (offset < preview.validRows) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("commit", "true");
+        formData.append("batchOffset", String(offset));
+        formData.append("batchSize", String(batchSize));
+
+        const response = await fetch("/api/master/assets/import", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Gagal menyimpan batch import SIMAN.");
+        }
+
+        created += result.created || 0;
+        updated += result.updated || 0;
+        offset = result.nextOffset || offset + (result.processed || batchSize);
+        setSaveProgress({ processed: Math.min(offset, preview.validRows), total: preview.validRows, created, updated });
+
+        if (!result.hasMore) break;
+      }
+
+      showNotif(`${created} aset baru, ${updated} aset diperbarui.`);
+      setPreview(null);
+      setFile(null);
+      setSaveProgress(null);
     } catch (error) {
       showNotif(error.message, "error");
     } finally {
@@ -272,12 +325,17 @@ export default function ImportSimanPage({ showNotif }) {
           )}
 
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+            {saveProgress && (
+              <div style={{ marginRight: "auto", fontSize: 12, color: C.textMuted, alignSelf: "center" }}>
+                Menyimpan {saveProgress.processed.toLocaleString("id-ID")} / {saveProgress.total.toLocaleString("id-ID")} aset
+              </div>
+            )}
             <button onClick={() => { setFile(null); setPreview(null); }} style={btnStyle(C.textDim)}>
               Upload Ulang
             </button>
             <button
               disabled={busy || preview.errorRows > 0 || preview.validRows === 0}
-              onClick={() => uploadSiman(true)}
+              onClick={saveAllBatches}
               style={{ ...btnStyle(C.primary, true), opacity: busy || preview.errorRows > 0 || preview.validRows === 0 ? 0.65 : 1 }}
             >
               {busy ? "Menyimpan..." : "Simpan ke Database"}

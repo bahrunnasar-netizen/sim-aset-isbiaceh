@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { AssetCondition, AssetOwnershipType, AssetStatus, AssetType } from "@/generated/prisma";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 const TEXT_DECODER = new TextDecoder("utf-8");
 
@@ -371,6 +372,8 @@ export async function POST(request) {
     const formData = await request.formData();
     const file = formData.get("file");
     const commit = formData.get("commit") === "true";
+    const batchOffset = Math.max(Number(formData.get("batchOffset") || 0), 0);
+    const batchSize = Math.min(Math.max(Number(formData.get("batchSize") || 250), 1), 500);
 
     if (!file || typeof file.arrayBuffer !== "function") {
       return badRequest("File SIMAN wajib diunggah.");
@@ -403,46 +406,57 @@ export async function POST(request) {
 
     const rooms = await roomMapByName();
     const result = { created: 0, updated: 0, skipped: skipped.length };
+    const batch = assets.slice(batchOffset, batchOffset + batchSize);
+    const existingCodes = new Set(
+      (
+        await prisma.asset.findMany({
+          where: { code: { in: batch.map((asset) => asset.code) } },
+          select: { code: true },
+        })
+      ).map((asset) => asset.code),
+    );
 
-    await prisma.$transaction(async (tx) => {
-      for (const asset of assets) {
-        const ruanganId = asset.ruanganName ? rooms.get(normalizeKey(asset.ruanganName)) ?? null : null;
-        const existing = await tx.asset.findUnique({ where: { code: asset.code }, select: { id: true } });
-        const data = {
-          code: asset.code,
-          nup: asset.nup,
-          name: asset.name,
-          category: asset.category,
-          assetType: asset.assetType,
-          ownershipType: asset.ownershipType,
-          condition: asset.condition,
-          status: asset.status,
-          acquisitionValue: asset.acquisitionValue,
-          acquisitionYear: asset.acquisitionYear,
-          specification: asset.specification,
-          sourceData: asset.sourceData,
-          ruanganId,
-          prodiOwnerId: null,
-          unitPenanggungJawabId: null,
-        };
+    for (const asset of batch) {
+      const ruanganId = asset.ruanganName ? rooms.get(normalizeKey(asset.ruanganName)) ?? null : null;
+      const data = {
+        code: asset.code,
+        nup: asset.nup,
+        name: asset.name,
+        category: asset.category,
+        assetType: asset.assetType,
+        ownershipType: asset.ownershipType,
+        condition: asset.condition,
+        status: asset.status,
+        acquisitionValue: asset.acquisitionValue,
+        acquisitionYear: asset.acquisitionYear,
+        specification: asset.specification,
+        sourceData: asset.sourceData,
+        ruanganId,
+        prodiOwnerId: null,
+        unitPenanggungJawabId: null,
+      };
 
-        await tx.asset.upsert({
-          where: { code: asset.code },
-          create: data,
-          update: data,
-        });
+      await prisma.asset.upsert({
+        where: { code: asset.code },
+        create: data,
+        update: data,
+      });
 
-        if (existing) result.updated += 1;
-        else result.created += 1;
-      }
-    });
+      if (existingCodes.has(asset.code)) result.updated += 1;
+      else result.created += 1;
+    }
 
     return NextResponse.json({
       mode: "commit",
       totalImported: assets.length,
+      processed: batch.length,
+      batchOffset,
+      batchSize,
+      nextOffset: batchOffset + batch.length,
+      hasMore: batchOffset + batch.length < assets.length,
       ...result,
       skipped,
-      message: `${result.created} aset baru, ${result.updated} aset diperbarui.`,
+      message: `${result.created} aset baru, ${result.updated} aset diperbarui pada batch ini.`,
     });
   } catch (error) {
     console.error("POST /api/master/assets/import failed:", error);
