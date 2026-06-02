@@ -22,7 +22,7 @@ export default function LoginScreen({ onLogin }) {
           width: "100%",
           maxWidth: 980,
           display: "grid",
-          gridTemplateColumns: "minmax(280px, 1fr) minmax(360px, 430px)",
+          gridTemplateColumns: "minmax(300px, 1fr) minmax(360px, 430px)",
           gap: 24,
           alignItems: "stretch",
         }}
@@ -32,8 +32,8 @@ export default function LoginScreen({ onLogin }) {
             background: C.sidebar,
             color: C.inverseText,
             borderRadius: 8,
-            padding: 34,
-            minHeight: 520,
+            padding: "32px 36px",
+            minHeight: 500,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -52,30 +52,30 @@ export default function LoginScreen({ onLogin }) {
                 justifyContent: "center",
                 fontSize: 20,
                 fontWeight: 900,
-                marginBottom: 28,
+                marginBottom: 30,
               }}
             >
               SA
             </div>
             <div style={{ fontSize: 12, color: "#9CA3AF", fontWeight: 700, marginBottom: 10 }}>
-              SIMA ISBI ACEH
+              SIASET ISBI ACEH
             </div>
-            <h1 style={{ margin: 0, fontSize: 42, lineHeight: 1.08, fontWeight: 900, maxWidth: 440 }}>
-              Pusat kendali aset BMN yang rapi dan mudah diaudit.
+            <h1 style={{ margin: 0, fontSize: 38, lineHeight: 1.14, fontWeight: 900, maxWidth: 470 }}>
+              Pusat kendali aset BMN yang rapi, cepat, dan mudah diaudit.
             </h1>
-            <p style={{ margin: "18px 0 0", color: "#CBD5E1", fontSize: 15, lineHeight: 1.7, maxWidth: 520 }}>
+            <p style={{ margin: "18px 0 0", color: "#CBD5E1", fontSize: 15, lineHeight: 1.72, maxWidth: 540 }}>
               Kelola aset, ruangan, kendaraan, BAST, dan data SIMAN v2 dalam satu ruang kerja yang bersih.
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
             {[
               ["9.094", "Aset SIMAN"],
               ["15", "Kendaraan"],
               ["v2", "Import Ready"],
             ].map(([value, label]) => (
-              <div key={label} style={{ borderTop: "1px solid rgba(255,255,255,0.14)", paddingTop: 12 }}>
-                <div style={{ fontSize: 20, fontWeight: 900, color: "#FFFFFF" }}>{value}</div>
+              <div key={label} style={{ borderTop: "1px solid rgba(255,255,255,0.14)", paddingTop: 14 }}>
+                <div style={{ fontSize: 21, fontWeight: 900, color: "#FFFFFF" }}>{value}</div>
                 <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 3 }}>{label}</div>
               </div>
             ))}
@@ -87,7 +87,7 @@ export default function LoginScreen({ onLogin }) {
             background: C.card,
             border: `1px solid ${C.border}`,
             borderRadius: 8,
-            padding: 28,
+            padding: "30px 28px",
             boxShadow: C.shadow,
             alignSelf: "center",
           }}
